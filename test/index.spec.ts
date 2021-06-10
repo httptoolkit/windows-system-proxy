@@ -7,7 +7,6 @@ describe("windows-system-proxy", () => {
 
         expect(
             await getWindowsSystemProxy()
-        ).to.deep.equal({
-        });
+        ).to.equal(undefined);
     });
 });
