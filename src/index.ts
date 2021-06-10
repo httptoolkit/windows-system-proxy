@@ -31,10 +31,20 @@ export async function getWindowsSystemProxy(): Promise<WindowsProxySettings | un
             : [host]
         );
 
-    // ProxyServer is either a host, or a ;-separated list of key/value pairs mapping protocols to proxy hosts
+    // ProxyServer specifies the proxy host(s), but in a few different formats...
     const proxyConfigString = proxyServer.data as string;
 
-    if (proxyConfigString.includes('=')) {
+    if (proxyConfigString.startsWith('http://') || proxyConfigString.startsWith('https://')) {
+        // Unclear whether this is used in reality, but it's an example of a valid config in the microsoft
+        // docs: https://docs.microsoft.com/en-us/troubleshoot/windows-client/networking/configure-client-proxy-server-settings-by-registry-file
+        return {
+            proxyUrl: proxyConfigString,
+            noProxy
+        };
+    } else if (proxyConfigString.includes('=')) {
+        // If you separately configure proxies by protocol (in Internet Settings), it seems to store them as a
+        // list of protocol=host;protocol=host key value pairs. We use the best supported host we can find, assuming
+        // that all proxies probably support both HTTP & HTTPS traffic in reality, because they do seem to.
         const proxies = Object.fromEntries(
             proxyConfigString
                 .split(';')
@@ -58,6 +68,7 @@ export async function getWindowsSystemProxy(): Promise<WindowsProxySettings | un
             noProxy
         };
     } else {
+        // Alternatively, it's often just a bare hostname, so we use that directly:
         return {
             proxyUrl: `http://${proxyConfigString}`,
             noProxy
