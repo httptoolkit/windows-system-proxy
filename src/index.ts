@@ -56,7 +56,7 @@ export async function getWindowsSystemProxy(): Promise<WindowsProxySettings | un
             : proxies['socks']
                 ? `socks://${proxies['socks']}`
             : proxies['https']
-                ? `https://${proxies['https']}`
+                ? `http://${proxies['https']}`
             : undefined;
 
         if (!proxyUrl) {
