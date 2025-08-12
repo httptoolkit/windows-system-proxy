@@ -51,12 +51,12 @@ export async function getWindowsSystemProxy(): Promise<WindowsProxySettings | un
                 .map((proxyPair) => proxyPair.split('=') as [string, string])
         );
 
-        const proxyUrl = proxies['https']
-                ? `https://${proxies['https']}`
-            : proxies['http']
+        const proxyUrl = proxies['http']
                 ? `http://${proxies['http']}`
             : proxies['socks']
                 ? `socks://${proxies['socks']}`
+            : proxies['https']
+                ? `http://${proxies['https']}`
             : undefined;
 
         if (!proxyUrl) {
